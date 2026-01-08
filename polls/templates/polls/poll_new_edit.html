@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{% if form.instance.pk %}Edit Poll{% else %}Create New Poll{% endif %} | Polls{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">
+                    {% if form.instance.pk %}
+                        Edit Poll
+                    {% else %}
+                        Create New Poll
+                    {% endif %}
+                </h2>
+
+                {% if slogan %}
+                    <div class="alert alert-info mb-4">
+                        <em>{{ slogan }}</em>
+                    </div>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_question_text" class="form-label">
+                            Question Text <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="question_text"
+                            maxlength="200"
+                            class="form-control {% if form.question_text.errors %}is-invalid{% endif %}"
+                            required
+                            id="id_question_text"
+                            value="{{ form.question_text.value|default:'' }}"
+                        >
+                        {% if form.question_text.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.question_text.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_choices" class="form-label">
+                            Question Choices <span class="text-danger">*</span>
+                        </label>
+                        <textarea
+                            name="choices"
+                            cols="40"
+                            rows="7"
+                            class="form-control {% if form.choices.errors %}is-invalid{% endif %}"
+                            required
+                            id="id_choices"
+                        >{{ form.choices.value|default:'' }}</textarea>
+                        <div class="form-text">
+                            Enter the answer options, separating each option with a new line. At least 2 options required.
+                        </div>
+                        {% if form.choices.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.choices.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if form.instance.pk %}
+                                Update Poll
+                            {% else %}
+                                Create Poll
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'polls:index' %}" class="btn btn-secondary btn-lg">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-warning mt-4">
+            <strong>Instructions:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Enter your poll question in the first field</li>
+                <li>Add answer options in the "Question Choices" field</li>
+                <li>Separate each option with a new line</li>
+                <li>At least 2 options are required</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

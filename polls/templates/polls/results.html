@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Results: {{ question.question_text }} | Polls{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Results</h2>
+                
+                <h4 class="mb-4">{{ question.question_text }}</h4>
+
+                <p class="text-muted mb-4">
+                    Published: {{ question.pub_date|date:"M d, Y H:i" }}
+                </p>
+
+                <!-- Результаты -->
+                <div class="mb-4">
+                    <p class="lead">
+                        <strong>Total Votes:</strong>
+                        <span id="total-votes">{{ question.get_total_votes }}</span>
+                    </p>
+
+                    {% for choice in question.choice_set.all %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">{{ choice.choice_text }}</h6>
+                                <span class="badge bg-primary">{{ choice.votes }} vote{{ choice.votes|pluralize }}</span>
+                            </div>
+
+                            <div class="progress" style="height: 25px;">
+                                {% if question.get_total_votes > 0 %}
+                                    {% widthratio choice.votes question.get_total_votes 100 as percentage %}
+                                    <div
+                                        class="progress-bar bg-success"
+                                        role="progressbar"
+                                        style="width: {{ percentage }}%"
+                                        aria-valuenow="{{ choice.votes }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="{{ question.get_total_votes }}"
+                                    >
+                                        <span class="ps-2">{{ percentage }}% ({{ choice.votes }} vote{{ choice.votes|pluralize }})</span>
+                                    </div>
+                                {% else %}
+                                    <div
+                                        class="progress-bar bg-secondary"
+                                        role="progressbar"
+                                        style="width: 100%"
+                                        aria-valuenow="0"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        <span class="ps-2">No votes</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <hr>
+
+                <!-- Кнопки -->
+                <div class="d-flex gap-2">
+                    <a href="{% url 'polls:detail' question.id %}" class="btn btn-primary btn-lg">
+                        Vote Again
+                    </a>
+                    <a href="{% url 'polls:index' %}" class="btn btn-secondary btn-lg">
+                        ← Back to Polls
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if user.is_staff %}
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">⚙️ Admin Actions</h5>
+                    <a href="{% url 'polls:poll_edit' question.id %}" class="btn btn-warning btn-sm">
+                        Edit Poll
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

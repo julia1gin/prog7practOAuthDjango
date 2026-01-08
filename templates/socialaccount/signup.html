@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Your Profile | Polls{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Complete Your Profile</h2>
+
+                <div class="alert alert-info mb-4">
+                    <strong>👋 Welcome!</strong><br>
+                    You're signing in with <strong>{{ account.provider|title }}</strong>.
+                    Please choose a username to complete your profile.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" value="{{ form.username.value|default:'' }}" required maxlength="150" autofocus>
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Choose a username for your account.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:'' }}" readonly>
+                        <small class="form-text text-muted">
+                            This email is from your {{ account.provider|title }} account.
+                        </small>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">Complete Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
